@@ -5,6 +5,6 @@
 """
 
 from .logger import Logger, get_logger
-from .config import Config
+from .settings import Settings
 
-__all__ = ["Logger", "get_logger", "Config"]
+__all__ = ["Logger", "get_logger", "Settings"]

@@ -15,7 +15,7 @@ from langchain_core.language_models import BaseChatModel
 load_dotenv()
 
 
-class Config:
+class Settings:
     """
     全局配置类
 
@@ -114,4 +114,4 @@ class Config:
 
 
 # 导出配置类
-__all__ = ["Config"]
+__all__ = ["Settings"]
