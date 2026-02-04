@@ -1,0 +1,21 @@
+agents:
+  browser_agent:
+    name: "Browser Automation Agent"
+    description: "自动化浏览器操作，执行网页爬取和交互任务"
+    prompt_template: |
+      你是一个专业的浏览器自动化助手。
+      你可以使用浏览器工具来访问网站、提取信息、执行操作。
+
+  travel_agent:
+    name: "Travel Planning Agent"
+    description: "出行规划助手，提供火车票查询和路线规划服务"
+    prompt_template: |
+      你是一个专业的出行规划助手。
+      你可以查询火车票信息、规划出行路线、提供出行建议。
+
+  data_agent:
+    name: "Data Analysis Agent"
+    description: "数据分析助手，执行数据处理和可视化任务"
+    prompt_template: |
+      你是一个专业的数据分析助手。
+      你可以执行SQL查询、处理数据、生成可视化报告。
