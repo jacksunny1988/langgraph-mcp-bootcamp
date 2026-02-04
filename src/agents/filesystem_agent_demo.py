@@ -28,7 +28,9 @@ async def main():
     print("--- Initializing Filesystem MCP Agent ---")
 
     # 获取当前项目的根目录，作为允许文件系统访问的路径
-    project_root = os.curdir #os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+    project_root = (
+        os.curdir
+    )  # os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
     print(f"[DIR] Allowed directory: {project_root}")
 
     # 2. 使用 MultiServerMCPClient 管理 MCP 连接
@@ -72,8 +74,7 @@ async def main():
         return END
 
     # 添加条件边：从 agent 出发，根据 should_continue 的结果分流
-    workflow.add_conditional_edges(
-        "agent", should_continue)
+    workflow.add_conditional_edges("agent", should_continue)
 
     # 工具执行完后，必须回到 agent 节点，让 LLM 根据工具结果生成最终回复
     workflow.add_edge("tools", "agent")

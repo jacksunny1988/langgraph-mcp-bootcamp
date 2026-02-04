@@ -1,24 +1,23 @@
 {
-  "mcpServers": {
-    "server_12306": {
-      "command": "python",
-      "args": ["src/mcp_servers/server_12306.py"],
-      "env": {}
+  "mcp_servers": [
+    {
+      "name": "filesystem_std",
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/tmp"
+      ]
     },
-    "server_amap": {
+    {
+      "name": "calculator_std",
+      "type": "stdio",
       "command": "python",
-      "args": ["src/mcp_servers/server_amap.py"],
-      "env": {}
-    },
-    "server_nl2sql": {
-      "command": "python",
-      "args": ["src/mcp_servers/server_nl2sql.py"],
-      "env": {}
-    },
-    "server_python": {
-      "command": "python",
-      "args": ["src/mcp_servers/server_python.py"],
-      "env": {}
+      "args": [
+        "-m",
+        "src.mcp_servers.server_calculator"
+      ]
     }
-  }
+  ]
 }

@@ -1,5 +1,6 @@
 import asyncio
-import logging
+import json
+from pathlib import Path
 from typing import List, Any, Optional
 from langchain_mcp_adapters.client import MultiServerMCPClient
 
@@ -110,6 +111,77 @@ class MCPClientManager:
         self.add_server(server_name, command, args, transport="stdio")
 
         # 获取工具
+        return await self.get_tools()
+
+    async def load_tools_from_config(
+        self, config_path: str = "config/mcp_config.json"
+    ) -> List[Any]:
+        """
+        从 JSON 配置文件中读取 MCP 服务器配置并加载所有工具。
+
+        配置文件格式：
+        {
+            "mcp_servers": [
+                {
+                    "name": "server_name",
+                    "type": "stdio",  // 或 "streamable_http"
+                    "command": "python",  // 仅 stdio 需要
+                    "args": ["-m", "my_mcp_server"],  // 仅 stdio 需要
+                    "url": "http://localhost:8000/mcp",  // 仅 streamable_http 需要
+                    "headers": {"Authorization": "Bearer xxx"}  // 可选
+                }
+            ]
+        }
+
+        参数:
+            config_path: 配置文件路径，默认为 "config/mcp_config.json"
+
+        返回:
+            List[langchain_core.tools.BaseTool]: 所有服务器的工具列表
+        """
+        config_file = Path(config_path)
+        if not config_file.exists():
+            raise FileNotFoundError(f"MCP config file not found: {config_path}")
+
+        with open(config_file, "r", encoding="utf-8") as f:
+            config = json.load(f)
+
+        servers_config = config.get("mcp_servers", [])
+        if not servers_config:
+            logger.warning(f"No MCP servers configured in {config_path}")
+            return []
+
+        # 添加所有服务器配置
+        for server in servers_config:
+            server_name = server.get("name")
+            server_type = server.get("type", "stdio")
+
+            if not server_name:
+                logger.warning(f"Server missing 'name' field, skipping: {server}")
+                continue
+
+            if server_type == "stdio":
+                command = server.get("command", "python")
+                args = server.get("args", [])
+                self.add_server(server_name, command, args, transport="stdio")
+
+            elif server_type == "streamable_http":
+                url = server.get("url")
+                if not url:
+                    logger.warning(
+                        f"HTTP server '{server_name}' missing 'url', skipping"
+                    )
+                    continue
+                headers = server.get("headers")
+                self.add_server(
+                    server_name, "", [], transport="streamable_http", url=url, headers=headers
+                )
+            else:
+                logger.warning(
+                    f"Unknown server type '{server_type}' for '{server_name}', skipping"
+                )
+
+        # 获取所有工具
         return await self.get_tools()
 
     async def close(self) -> None:
