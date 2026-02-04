@@ -1,6 +1,7 @@
 import asyncio
 import os
 
+from typing import Literal
 from langchain_core.messages import HumanMessage
 from langgraph.graph import StateGraph, END, START
 from langgraph.prebuilt import ToolNode
@@ -27,7 +28,7 @@ async def main():
     print("--- Initializing Filesystem MCP Agent ---")
 
     # 获取当前项目的根目录，作为允许文件系统访问的路径
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+    project_root = os.curdir #os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
     print(f"[DIR] Allowed directory: {project_root}")
 
     # 2. 使用 MultiServerMCPClient 管理 MCP 连接
@@ -61,7 +62,7 @@ async def main():
     workflow.add_edge(START, "agent")
 
     # 5. 设置条件边
-    def should_continue(state: AgentState):
+    def should_continue(state: AgentState) -> Literal["tools", END]:
         messages = state["messages"]
         last_message = messages[-1]
         # 如果最后一条消息包含工具调用请求，去 tools 节点
@@ -72,8 +73,7 @@ async def main():
 
     # 添加条件边：从 agent 出发，根据 should_continue 的结果分流
     workflow.add_conditional_edges(
-        "agent", should_continue, {"tools": "tools", END: END}
-    )
+        "agent", should_continue)
 
     # 工具执行完后，必须回到 agent 节点，让 LLM 根据工具结果生成最终回复
     workflow.add_edge("tools", "agent")
@@ -83,7 +83,7 @@ async def main():
 
     # 6. 运行测试
     print("\n--- [START] Test begins ---")
-    user_input = "请帮我列出 src 目录下所有的文件，并告诉我里面有什么 Python 文件。"
+    user_input = "请帮我列出当前目录下所有的文件，并告诉我里面有什么 Python 文件。"
 
     initial_state = {"messages": [HumanMessage(content=user_input)]}
 
