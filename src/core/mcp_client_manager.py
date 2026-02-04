@@ -1,7 +1,9 @@
 import asyncio
 import json
 from pathlib import Path
-from typing import List, Any, Optional
+from typing import List, Optional
+
+from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
 
 from core import get_logger
@@ -49,7 +51,7 @@ class MCPClientManager:
             url: HTTP 服务器 URL (仅 streamable_http 需要)
             headers: HTTP 请求头 (仅 streamable_http 需要)
         """
-        config: dict[str, Any] = {
+        config: dict[str, str | List[str]] = {
             "command": command,
             "args": args,
             "transport": transport,
@@ -65,7 +67,7 @@ class MCPClientManager:
         self._servers[server_name] = config
         logger.info(f"Added server config: {server_name}")
 
-    async def get_tools(self) -> List[Any]:
+    async def get_tools(self) -> List[BaseTool]:
         """
         获取所有已配置服务器的工具列表。
 
@@ -90,7 +92,7 @@ class MCPClientManager:
 
     async def load_tools_from_stdio_server(
         self, server_name: str, command: str, args: List[str] = None
-    ) -> List[Any]:
+    ) -> List[BaseTool]:
         """
         兼容旧接口：通过 Stdio 连接到 MCP Server，加载并转换工具。
 
@@ -115,7 +117,7 @@ class MCPClientManager:
 
     async def load_tools_from_config(
         self, config_path: str = "config/mcp_config.json"
-    ) -> List[Any]:
+    ) -> List[BaseTool]:
         """
         从 JSON 配置文件中读取 MCP 服务器配置并加载所有工具。
 
