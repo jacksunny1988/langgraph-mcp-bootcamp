@@ -1,80 +1,65 @@
 """
 LangGraph 构建基类
 """
+from langgraph.graph import StateGraph, START, END
+from langgraph.types import BaseCheckpointSaver
+from core import AgentState,Settings
 
-from typing import Any, Callable, Dict, List, TypeVar
-from langgraph.graph import StateGraph
-from .state import AgentState
+class GraphBuilder:
 
-T = TypeVar("T", bound=AgentState)
+    def __init__(self,checkPointer:BaseCheckpointSaver|None=None):
+        pass
 
-
-class BaseGraphBuilder:
-    """LangGraph 构建基类"""
-
-    def __init__(self, state_class: type[T]):
-        self.state_class = state_class
-        self.graph = StateGraph(state_class)
-        self.nodes: Dict[str, Callable] = {}
-        self.edges: List[tuple[str, str]] = []
-        self.conditional_edges: List[tuple] = []
-
-    def add_node(self, name: str, func: Callable) -> "BaseGraphBuilder":
-        """添加节点"""
-        self.nodes[name] = func
-        self.graph.add_node(name, func)
-        return self
-
-    def add_edge(self, from_node: str, to_node: str) -> "BaseGraphBuilder":
-        """添加边"""
-        self.edges.append((from_node, to_node))
-        self.graph.add_edge(from_node, to_node)
-        return self
-
-    def add_conditional_edge(
-        self, from_node: str, condition: Callable, mapping: Dict[str, str]
-    ) -> "BaseGraphBuilder":
-        """添加条件边"""
-        self.conditional_edges.append((from_node, condition, mapping))
-        self.graph.add_conditional_edges(from_node, condition, mapping)
-        return self
-
-    def set_entry_point(self, node_name: str) -> "BaseGraphBuilder":
-        """设置入口点"""
-        self.graph.set_entry_point(node_name)
-        return self
-
-    def compile(self) -> Any:
-        """编译图"""
-        return self.graph.compile()
-
-    def get_graph_info(self) -> Dict[str, Any]:
-        """获取图信息"""
-        return {
-            "nodes": list(self.nodes.keys()),
-            "edges": self.edges,
-            "conditional_edges": [{"from": e[0], "mapping": e[2]} for e in self.conditional_edges],
-        }
+    @property
+    def chatModel(self):
+        return Settings.get_llm()
+    
+    def __agent_node(self,state: AgentState) -> AgentState:
+        """智能体节点"""
+        messages = state["messages"]
+        response = self.chatModel.invoke(messages)
+        return {"messages": [response] }
+    
+    def build_basic_graph(self):
+        """
+        构建最基础的 LangGraph：Start -> Agent -> End
+        """
+        # 创建基于 AgentState 的图
+        workflow = StateGraph(AgentState)
+        
+        # 添加节点
+        workflow.add_node("agent", self.__agent_node)
+        
+        # 设置入口点：图开始时首先进入的节点
+        workflow.add_edge(START, "agent")
+        
+        # 设置出口点：Agent 节点执行完毕后，流程结束
+        workflow.add_edge("agent", END)
+        
+        # 编译图（将其转换为可运行的 Runnable）
+        app = workflow.compile()
+        return app
 
 
-class AgentGraphBuilder(BaseGraphBuilder):
-    """智能体图构建器"""
+# 4. 运行测试的主函数
+if __name__ == "__main__":
+    from langchain_core.messages import HumanMessage
+    print("--- 正在初始化基础 LangGraph ---")
+    app = GraphBuilder().build_basic_graph()
+    
+    # 准备初始输入 State
+    initial_state = {
+        "messages": [HumanMessage(content="你好，请介绍一下你自己。")]
+    }
+    
+    print(f"--- 用户输入: {initial_state['messages'][0].content} ---")
+    
+    # 调用图 (invoke 是同步调用，最终返回完整的 State)
+    final_state = app.invoke(initial_state)
+    
+    # 打印最终结果
+    response_message = final_state["messages"][-1]
+    print(f"--- AI 回复: {response_message.content} ---")
+    print("\n✅ 子任务 1.1 验收完成：图流转成功。")
 
-    def __init__(self, agent_name: str):
-        super().__init__(AgentState)
-        self.agent_name = agent_name
 
-    def build_simple_chain(self, nodes: List[str]) -> Any:
-        """构建简单的链式结构"""
-        self.set_entry_point(nodes[0])
-        for i in range(len(nodes) - 1):
-            self.add_edge(nodes[i], nodes[i + 1])
-        return self.compile()
-
-    def build_with_router(
-        self, router_node: str, router_func: Callable, routes: Dict[str, List[str]]
-    ) -> Any:
-        """构建带路由的结构"""
-        self.set_entry_point(router_node)
-        self.add_conditional_edge(router_node, router_func, routes)
-        return self.compile()
