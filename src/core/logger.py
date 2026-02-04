@@ -164,5 +164,4 @@ def get_logger(name: Optional[str] = None):
     return Logger.get_logger(name)
 
 
-# 导出 logger 实例供直接使用
-__all__ = ["Logger", "setup_logger", "get_logger", "logger"]
+__all__ = ["Logger", "get_logger"]
