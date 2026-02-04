@@ -1,14 +1,15 @@
 """
 通用 State 定义
 """
-
-from typing import Any, Dict, List, Optional, TypedDict
+from typing import Any, Dict, List, Optional, TypedDict,Annotated
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
 
 
 class AgentState(TypedDict):
     """通用智能体状态"""
 
-    messages: List[Dict[str, Any]]
+    messages: Annotated[List[BaseMessage], add_messages]
     next: Optional[str]
     result: Optional[Any]
     error: Optional[str]
