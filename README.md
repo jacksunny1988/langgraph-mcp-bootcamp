@@ -114,7 +114,8 @@ langgraph-mcp-bootcamp/
 │   ├── core/                 # 核心基础设施
 │   │   ├── state.py          # 通用 State 定义
 │   │   ├── graph_builder.py  # LangGraph 构建基类
-│   │   └── mcp_adapters.py   # MCP 适配器管理器
+│   │   ├── mcp_adapters.py   # MCP 适配器管理器
+│   │   └── logger.py         # 日志管理模块
 │   ├── agents/               # 智能体实现
 │   │   ├── browser_agent/    # 浏览器自动化智能体
 │   │   ├── travel_agent/     # 出行规划智能体
@@ -162,6 +163,49 @@ OPENAI_BASE_URL=https://api.openai.com/v1
 # 其他配置
 LOG_LEVEL=INFO
 ```
+
+## 日志使用
+
+项目使用 `loguru` 进行日志管理，提供统一的日志配置接口。
+
+### 基础用法
+
+```python
+from src.core import Logger, get_logger
+
+# 方式一：使用默认配置的 logger
+logger = get_logger("my_module")
+logger.info("这是一条信息日志")
+logger.error("这是一条错误日志")
+
+# 方式二：自定义 Logger 配置
+log = Logger(
+    log_dir="logs",      # 日志目录
+    log_level="DEBUG",   # 日志级别
+    rotation="500 MB",   # 轮转大小
+    retention="7 days",  # 保留时间
+    compression="zip",   # 压缩格式
+    enable_console=True  # 启用控制台输出
+)
+log.configure()
+
+# 获取 logger 实例
+logger = log.get_logger("my_module")
+logger.debug("调试信息")
+```
+
+### 日志级别
+
+- `DEBUG` - 详细调试信息
+- `INFO` - 一般信息
+- `WARNING` - 警告信息
+- `ERROR` - 错误信息
+- `CRITICAL` - 严重错误
+
+### 日志文件
+
+- `logs/app_YYYY-MM-DD.log` - 应用日志（包含所有级别）
+- `logs/error_YYYY-MM-DD.log` - 错误日志（仅 ERROR 及以上）
 
 ## 开发
 
