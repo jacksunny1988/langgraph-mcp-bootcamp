@@ -3,7 +3,7 @@ Data Agent - 数据分析智能体
 """
 
 from typing import Any, Dict
-from langgraph.graph import  END
+from langgraph.graph import END
 from core.state import DataAgentState
 from core.graph_builder import BaseGraphBuilder
 
@@ -41,7 +41,9 @@ class DataAgent:
         state["query"] = user_message
         state["context"]["intent"] = self._classify_intent(user_message)
 
-        state["messages"].append({"role": "assistant", "content": f"已解析查询: {user_message}"})
+        state["messages"].append(
+            {"role": "assistant", "content": f"已解析查询: {user_message}"}
+        )
 
         return state
 
@@ -59,7 +61,9 @@ class DataAgent:
         else:
             state["sql"] = "SELECT * FROM users LIMIT 10"
 
-        state["messages"].append({"role": "assistant", "content": f"生成SQL: {state['sql']}"})
+        state["messages"].append(
+            {"role": "assistant", "content": f"生成SQL: {state['sql']}"}
+        )
 
         return state
 
@@ -69,7 +73,10 @@ class DataAgent:
         state["data"] = [{"id": 1, "name": "示例数据"}, {"id": 2, "name": "示例数据2"}]
 
         state["messages"].append(
-            {"role": "assistant", "content": f"查询完成，返回 {len(state['data'])} 条记录"}
+            {
+                "role": "assistant",
+                "content": f"查询完成，返回 {len(state['data'])} 条记录",
+            }
         )
 
         return state
@@ -101,7 +108,9 @@ class DataAgent:
             "analysis": state["context"]["analysis"],
         }
 
-        state["messages"].append({"role": "assistant", "content": "分析完成，结果已生成"})
+        state["messages"].append(
+            {"role": "assistant", "content": "分析完成，结果已生成"}
+        )
 
         return state
 

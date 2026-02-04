@@ -37,7 +37,9 @@ class Settings:
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///data/database.db")
 
     # LangGraph 配置
-    LANGCHAIN_TRACING_V2: bool = os.getenv("LANGCHAIN_TRACING_V2", "false").lower() == "true"
+    LANGCHAIN_TRACING_V2: bool = (
+        os.getenv("LANGCHAIN_TRACING_V2", "false").lower() == "true"
+    )
     LANGCHAIN_API_KEY: Optional[str] = os.getenv("LANGCHAIN_API_KEY")
     LANGCHAIN_PROJECT: str = os.getenv("LANGCHAIN_PROJECT", "langgraph-mcp-bootcamp")
 

@@ -7,5 +7,6 @@
 from .logger import Logger, get_logger
 from .settings import Settings
 from .state import AgentState
+from .mcp_client_manager import MCPClientManager
 
-__all__ = ["Logger", "get_logger", "Settings", "AgentState"]
+__all__ = ["Logger", "get_logger", "Settings", "AgentState", "MCPClientManager"]

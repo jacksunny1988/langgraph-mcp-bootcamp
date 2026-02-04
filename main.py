@@ -3,7 +3,11 @@ LangGraph MCP Bootcamp - 统一入口
 """
 import asyncio
 import sys
+# from pathlib import Path
 from typing import Optional
+
+# 添加 src 到 Python 路径
+# sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from src.core.mcp_adapters import MCPAdapterManager
 from src.agents.browser_agent import BrowserAgent

@@ -79,7 +79,9 @@ async def list_tools() -> list[Tool]:
             description="将自然语言转换为SQL并执行",
             inputSchema={
                 "type": "object",
-                "properties": {"query": {"type": "string", "description": "自然语言查询"}},
+                "properties": {
+                    "query": {"type": "string", "description": "自然语言查询"}
+                },
                 "required": ["query"],
             },
         ),
@@ -122,7 +124,8 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
         result = execute_query(sql)
         return [
             TextContent(
-                type="text", text=json.dumps({"sql": sql, "result": result}, ensure_ascii=False)
+                type="text",
+                text=json.dumps({"sql": sql, "result": result}, ensure_ascii=False),
             )
         ]
 
@@ -138,7 +141,13 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
                 {"name": "products", "columns": ["id", "name", "price", "category"]},
                 {
                     "name": "orders",
-                    "columns": ["id", "user_id", "product_id", "quantity", "order_date"],
+                    "columns": [
+                        "id",
+                        "user_id",
+                        "product_id",
+                        "quantity",
+                        "order_date",
+                    ],
                 },
             ]
         }

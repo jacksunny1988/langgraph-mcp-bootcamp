@@ -71,7 +71,11 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
 
     elif name == "get_train_detail":
         train_no = arguments["train_no"]
-        result = {"train_no": train_no, "status": "正常", "stations": ["起点站", "终点站"]}
+        result = {
+            "train_no": train_no,
+            "status": "正常",
+            "stations": ["起点站", "终点站"],
+        }
         return [TextContent(type="text", text=str(result))]
 
     return [TextContent(type="text", text="Unknown tool")]

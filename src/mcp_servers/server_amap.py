@@ -89,7 +89,12 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
     elif name == "get_weather":
         city = arguments["city"]
 
-        result = {"city": city, "weather": "晴", "temperature": "25°C", "humidity": "60%"}
+        result = {
+            "city": city,
+            "weather": "晴",
+            "temperature": "25°C",
+            "humidity": "60%",
+        }
         return [TextContent(type="text", text=str(result))]
 
     return [TextContent(type="text", text="Unknown tool")]

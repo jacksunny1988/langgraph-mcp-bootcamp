@@ -1,7 +1,8 @@
 """
 通用 State 定义
 """
-from typing import Any, Dict, List, Optional, TypedDict,Annotated
+
+from typing import Any, Dict, List, Optional, TypedDict, Annotated
 from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
 

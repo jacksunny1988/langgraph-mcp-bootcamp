@@ -99,7 +99,9 @@ class MCPAdapterManager:
         # 加载所有工具
         try:
             self.tools = await self.client.get_tools()
-            print(f"[MCP] Loaded {len(self.tools)} tools from {len(self.connections)} servers")
+            print(
+                f"[MCP] Loaded {len(self.tools)} tools from {len(self.connections)} servers"
+            )
 
             # 打印连接的服务器
             for name in self.connections.keys():
@@ -142,7 +144,9 @@ class MCPAdapterManager:
 
         return await self.client.get_resources(server_name=server_name, uris=uris)
 
-    async def get_prompt(self, server_name: str, name: str, arguments: Dict[str, Any] | None = None) -> List[Any]:
+    async def get_prompt(
+        self, server_name: str, name: str, arguments: Dict[str, Any] | None = None
+    ) -> List[Any]:
         """
         获取 MCP 提示
 
@@ -157,7 +161,9 @@ class MCPAdapterManager:
         if self.client is None:
             raise RuntimeError("MCP client not initialized. Call load_servers() first.")
 
-        return await self.client.get_prompt(server_name=server_name, name=name, arguments=arguments)
+        return await self.client.get_prompt(
+            server_name=server_name, name=name, arguments=arguments
+        )
 
     async def close_all(self) -> None:
         """关闭所有 MCP 连接"""

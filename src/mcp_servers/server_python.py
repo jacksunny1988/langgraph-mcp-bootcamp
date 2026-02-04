@@ -21,7 +21,9 @@ async def list_tools() -> list[Tool]:
             description="执行Python代码并返回结果",
             inputSchema={
                 "type": "object",
-                "properties": {"code": {"type": "string", "description": "要执行的Python代码"}},
+                "properties": {
+                    "code": {"type": "string", "description": "要执行的Python代码"}
+                },
                 "required": ["code"],
             },
         ),
@@ -78,13 +80,21 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
             output = redirected_output.getvalue()
             error = redirected_error.getvalue()
 
-            result = {"output": output, "error": error if error else None, "success": not error}
+            result = {
+                "output": output,
+                "error": error if error else None,
+                "success": not error,
+            }
 
             return [TextContent(type="text", text=str(result))]
 
         except Exception as e:
             error_msg = f"Error: {type(e).__name__}: {str(e)}\n{traceback.format_exc()}"
-            return [TextContent(type="text", text=str({"success": False, "error": error_msg}))]
+            return [
+                TextContent(
+                    type="text", text=str({"success": False, "error": error_msg})
+                )
+            ]
 
         finally:
             sys.stdout = old_stdout
@@ -110,7 +120,9 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
             else:
                 result = df.to_dict()
 
-            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False))]
+            return [
+                TextContent(type="text", text=json.dumps(result, ensure_ascii=False))
+            ]
 
         except ImportError:
             return [TextContent(type="text", text="pandas not installed")]
