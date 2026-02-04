@@ -3,9 +3,9 @@ Browser Agent - 浏览器自动化智能体
 """
 
 from typing import Any, Dict
-from langgraph.graph import StateGraph, END
-from ..core.state import BrowserAgentState
-from ..core.graph_builder import BaseGraphBuilder
+from langgraph.graph import END
+from core.state import BrowserAgentState
+from core.graph_builder import BaseGraphBuilder
 
 
 class BrowserAgent:
