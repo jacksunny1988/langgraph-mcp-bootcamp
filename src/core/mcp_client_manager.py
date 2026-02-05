@@ -88,7 +88,9 @@ class MCPClientManager:
         if not self._initialized:
             self._client = MultiServerMCPClient(self._servers)
             self._initialized = True
-            logger.info(f"MultiServerMCPClient initialized with {len(self._servers)} server(s)")
+            logger.info(
+                f"MultiServerMCPClient initialized with {len(self._servers)} server(s)"
+            )
 
         # 获取所有工具
         tools = await self._client.get_tools()
@@ -186,7 +188,12 @@ class MCPClientManager:
                     continue
                 headers = server.get("headers")
                 self.add_server(
-                    server_name, "", [], transport="streamable_http", url=url, headers=headers
+                    server_name,
+                    "",
+                    [],
+                    transport="streamable_http",
+                    url=url,
+                    headers=headers,
                 )
             else:
                 logger.warning(
