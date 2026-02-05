@@ -11,13 +11,16 @@
       ]
     },
     {
-      "name": "calculator_std",
+      "name": "firecrawl",
       "type": "stdio",
-      "command": "python",
+      "command": "npx",
       "args": [
-        "-m",
-        "src.mcp_servers.server_calculator"
-      ]
+        "-y",
+        "firecrawl-mcp"
+      ],
+      "env": {
+        "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}"
+      }
     }
   ]
 }

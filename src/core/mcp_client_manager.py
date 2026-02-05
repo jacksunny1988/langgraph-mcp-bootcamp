@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 from pathlib import Path
 from typing import List, Optional
 
@@ -39,6 +40,7 @@ class MCPClientManager:
         transport: str = "stdio",
         url: Optional[str] = None,
         headers: Optional[dict] = None,
+        env: Optional[dict] = None,
     ) -> None:
         """
         添加一个 MCP 服务器配置。
@@ -50,8 +52,9 @@ class MCPClientManager:
             transport: 传输方式 ("stdio" 或 "streamable_http")
             url: HTTP 服务器 URL (仅 streamable_http 需要)
             headers: HTTP 请求头 (仅 streamable_http 需要)
+            env: 环境变量字典 (可选)
         """
-        config: dict[str, str | List[str]] = {
+        config: dict[str, str | List[str] | dict] = {
             "command": command,
             "args": args,
             "transport": transport,
@@ -63,6 +66,9 @@ class MCPClientManager:
             config["url"] = url
             if headers:
                 config["headers"] = headers
+
+        if env:
+            config["env"] = env
 
         self._servers[server_name] = config
         logger.info(f"Added server config: {server_name}")
@@ -165,7 +171,11 @@ class MCPClientManager:
             if server_type == "stdio":
                 command = server.get("command", "python")
                 args = server.get("args", [])
-                self.add_server(server_name, command, args, transport="stdio")
+                env = server.get("env")
+                # 处理环境变量中的 ${VAR} 格式
+                if env:
+                    env = {k: os.path.expandvars(str(v)) for k, v in env.items()}
+                self.add_server(server_name, command, args, transport="stdio", env=env)
 
             elif server_type == "streamable_http":
                 url = server.get("url")
